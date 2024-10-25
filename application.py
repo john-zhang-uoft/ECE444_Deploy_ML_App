@@ -1,32 +1,31 @@
+from flask import Flask, request, jsonify
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 import pickle
-from flask import Flask, request, jsonify
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-@app.route('/')
+model = None
+vectorizer = None
+
+with open('basic_classifier.pkl', 'rb') as fid:
+        model = pickle.load(fid)
+with open('count_vectorizer.pkl', 'rb') as vd:
+        vectorizer = pickle.load(vd)
+
+
+@application.route("/")
 def index():
-    return "Your Flask ML App Works!"
+    return "Your Flask Application Runs!! V1.0"
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.get_json()
-    transformed_text = vectorizer.transform(data['text'])
-    prediction = model.predict(transformed_text)
-    return jsonify({'prediction': prediction.tolist()})
+@application.route("/predict", methods=['POST'])
+def make_prediction():
+        data = request.get_json()
+        input_text = data.get("text", "")
 
-def load_model():
-    loaded_model = None
-    with open('basic_classifier.pkl', 'rb') as fid:
-        loaded_model = pickle.load(fid)
+        prediction = model.predict(vectorizer.transform([input_text]))[0]
 
-    vectorizer = None
-    with open('vectorizer.pkl', 'rb') as fid:
-        vectorizer = pickle.load(fid)
-    return loaded_model, vectorizer
-
-model, vectorizer = load_model()
+        return jsonify({"prediction": prediction})
 
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    application.run(port=5000, debug=True)
