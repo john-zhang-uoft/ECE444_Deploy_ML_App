@@ -9,7 +9,7 @@ app = Flask(__name__)
 def index():
     return "Your Flask ML App Works!"
 
-@app.route('predict', methods=['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
     transformed_text = vectorizer.transform(data['text'])
@@ -26,6 +26,7 @@ def load_model():
         vectorizer = pickle.load(fid)
     return loaded_model, vectorizer
 
+model, vectorizer = load_model()
+
 if __name__ == "__main__":
-    model, vectorizer = load_model()
     app.run(port=5000, debug=True)
