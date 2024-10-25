@@ -5,24 +5,24 @@ import pickle
 
 application = Flask(__name__)
 
-model = None
-vectorizer = None
 
-with open('basic_classifier.pkl', 'rb') as fid:
-        model = pickle.load(fid)
-with open('count_vectorizer.pkl', 'rb') as vd:
-        vectorizer = pickle.load(vd)
+def load_model():
+    with open('basic_classifier.pkl', 'rb') as fid:
+            model = pickle.load(fid)
+    with open('count_vectorizer.pkl', 'rb') as vd:
+            vectorizer = pickle.load(vd)
+    return model, vectorizer
 
+model, vectorizer = load_model()
 
 @application.route("/")
 def index():
     return "Your Flask Application Runs!! V1.0"
 
 @application.route("/predict", methods=['POST'])
-def make_prediction():
+def predict():
         data = request.get_json()
         input_text = data.get("text", "")
-
         prediction = model.predict(vectorizer.transform([input_text]))[0]
 
         return jsonify({"prediction": prediction})
