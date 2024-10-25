@@ -5,6 +5,10 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return "Your Flask ML App Works!"
+
 @app.route('predict', methods=['POST'])
 def predict():
     data = request.get_json()
